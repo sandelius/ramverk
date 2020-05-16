@@ -1,0 +1,13 @@
+/.bundle/
+/.yardoc
+/Gemfile.lock
+/_yardoc/
+/coverage/
+/pkg/
+/spec/reports/
+/spec/examples.txt
+/tmp/
+.DS_Store
+/doc
+/spec/tmp/*
+!/spec/tmp/.gitkeep

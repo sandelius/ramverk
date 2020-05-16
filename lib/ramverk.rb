@@ -1,0 +1,25 @@
+# frozen_string_literal: true
+
+require_relative "ramverk/version"
+require_relative "ramverk/application"
+
+# The Ruby Application Framework.
+module Ramverk
+  # Get the current environment status.
+  #
+  # @return [Symbol]
+  def self.env
+    (ENV["APP_ENV"] || ENV["RACK_ENV"] || :development).to_sym
+  end
+
+  # Check if the given environment match the current.
+  #
+  # @overload env?(environment, ...)
+  #   @param environment [Symbol]
+  #   @param ... [Symbol]
+  #
+  # @return [Boolean]
+  def self.env?(*environment)
+    environment.include?(env)
+  end
+end

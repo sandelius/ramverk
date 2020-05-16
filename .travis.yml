@@ -1,0 +1,24 @@
+language: ruby
+script: "bundle exec rake spec:coverage"
+cache: bundler
+env:
+  global:
+    - CODECOV_TOKEN="52b505b7-f1b3-46d1-b6ec-efc17dd4558f"
+before_install:
+  - "gem update --system"
+rvm:
+  - 2.7.0
+  - 2.6.0
+  - 2.5.0
+  - ruby-head
+  - jruby
+  - jruby-head
+  - truffleruby
+matrix:
+  allow_failures:
+    - rvm: jruby-head
+    - rvm: ruby-head
+    - rvm: truffleruby
+branches:
+  only:
+    - master
