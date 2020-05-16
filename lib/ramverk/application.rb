@@ -35,6 +35,7 @@ module Ramverk
 
         @configuration = Configuration.new do
           add :root, Dir.pwd
+          add :middleware, []
 
           # Routing
           add :base_url, "http://localhost:9292"
@@ -53,7 +54,6 @@ module Ramverk
         end
 
         @container = {
-          middleware: [],
           autoload: Zeitwerk::Loader.new
         }
       end
@@ -111,7 +111,7 @@ module Ramverk
       #     use Rack::Static, root: "public", urls: %w[/assets]
       #   end
       def use(middleware, *args, &block)
-        app[:middleware] << [middleware, args, block].freeze
+        configuration[:middleware] << [middleware, args, block].freeze
       end
 
       # Yield the block if the given environment matches the current.
@@ -192,7 +192,7 @@ module Ramverk
         return unless app[:logger]
 
         require_relative "middleware/request_logger"
-        app[:middleware].unshift([Ramverk::Middleware::RequestLogger,
+        cfg[:middleware].unshift([Ramverk::Middleware::RequestLogger,
                                   [app[:logger], cfg[:logger_filter_params]],
                                   nil])
 
@@ -215,7 +215,7 @@ module Ramverk
           app[:autoload].enable_reloading
 
           require_relative "middleware/reloader"
-          app[:middleware].unshift([Ramverk::Middleware::Reloader,
+          cfg[:middleware].unshift([Ramverk::Middleware::Reloader,
                                     [app[:autoload]],
                                     nil])
         end
@@ -245,7 +245,7 @@ module Ramverk
       app.boot
 
       @app = Rack::Builder.new do
-        app[:middleware].each do |(mw, args, block)|
+        app.configuration[:middleware].each do |(mw, args, block)|
           use mw, *args, &block
         end
 
