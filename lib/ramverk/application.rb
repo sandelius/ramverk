@@ -41,6 +41,7 @@ module Ramverk
           add :routes, (proc {})
 
           # Logging
+          add :logger, Logger.new(Ramverk.env?(:test) ? "/dev/null" : $stdout)
           add :logger_level, Ramverk.env?(:production) ? :info : :debug
           add :logger_formatter, LOGGER_DEFAULT_FORMATTER
           add :logger_filter_params, %w[password password_confirmation]
@@ -53,7 +54,6 @@ module Ramverk
 
         @container = {
           middleware: [],
-          logger: Logger.new(Ramverk.env?(:test) ? "/dev/null" : $stdout),
           autoload: Zeitwerk::Loader.new
         }
       end
@@ -187,6 +187,8 @@ module Ramverk
       # @private
       # rubocop:disable Metrics/AbcSize
       def boot_logger
+        app[:logger] = cfg[:logger]
+
         return unless app[:logger]
 
         require_relative "middleware/request_logger"
@@ -261,6 +263,10 @@ module Ramverk
     def call(env)
       @app.call(env)
     end
+
+    # LOGGER_DEFAULT_FORMATTER = lambda do |severity, time, _, msg|
+    #   %({"time":"#{time}","severity":"#{severity}","message":"#{msg}"}\n)
+    # end
 
     # @private
     LOGGER_DEFAULT_FORMATTER = ->(_, _, _, msg) { "#{msg}\n" }

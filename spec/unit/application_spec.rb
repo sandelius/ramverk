@@ -84,7 +84,7 @@ module Ramverk
         end
 
         it "skip request logger if logging is disabled" do
-          app[:logger] = nil
+          app.set :logger, nil
           app.boot
 
           expect(app[:middleware].map(&:first))
