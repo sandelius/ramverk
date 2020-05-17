@@ -264,10 +264,6 @@ module Ramverk
       @app.call(env)
     end
 
-    # LOGGER_DEFAULT_FORMATTER = lambda do |severity, time, _, msg|
-    #   %({"time":"#{time}","severity":"#{severity}","message":"#{msg}"}\n)
-    # end
-
     # @private
     LOGGER_DEFAULT_FORMATTER = ->(_, _, _, msg) { "#{msg}\n" }
     private_constant :LOGGER_DEFAULT_FORMATTER
