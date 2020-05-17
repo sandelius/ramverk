@@ -38,7 +38,7 @@ module Ramverk
         app.use Rack::Head
         app.use Rack::Static, root: "public", urls: %w[/assets]
 
-        expect(app.configuration[:middleware].map(&:first))
+        expect(app.configuration[:_middleware].map(&:first))
           .to eq([Rack::Head, Rack::Static])
       end
     end
@@ -55,7 +55,7 @@ module Ramverk
           app.use Rack::ConditionalGet
         end
 
-        expect(app.configuration[:middleware].map(&:first))
+        expect(app.configuration[:_middleware].map(&:first))
           .to eq([Rack::Head, Rack::ConditionalGet])
       end
     end
@@ -68,7 +68,7 @@ module Ramverk
           app.set :autoload_reload, true
           app.boot
 
-          expect(app.configuration[:middleware].map(&:first))
+          expect(app.configuration[:_middleware].map(&:first))
             .to eq([Ramverk::Middleware::Reloader,
                     Ramverk::Middleware::RequestLogger,
                     Rack::Head])
@@ -79,7 +79,7 @@ module Ramverk
         it "prepends a request logger" do
           app.boot
 
-          expect(app.configuration[:middleware].map(&:first))
+          expect(app.configuration[:_middleware].map(&:first))
             .to eq([Ramverk::Middleware::RequestLogger])
         end
 
@@ -87,7 +87,7 @@ module Ramverk
           app.set :logger, nil
           app.boot
 
-          expect(app.configuration[:middleware].map(&:first))
+          expect(app.configuration[:_middleware].map(&:first))
             .to eq([])
         end
       end

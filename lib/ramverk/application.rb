@@ -35,7 +35,7 @@ module Ramverk
 
         @configuration = Configuration.new do
           add :root, Dir.pwd
-          add :middleware, []
+          add :_middleware, []
 
           # Routing
           add :base_url, "http://localhost:9292"
@@ -48,14 +48,13 @@ module Ramverk
           add :logger_filter_params, %w[password password_confirmation]
 
           # Autoloading
+          add :_autoload, Zeitwerk::Loader.new
           add :autoload_paths, []
           add :autoload_eager_load, !Ramverk.env?(:development)
           add :autoload_reload, Ramverk.env?(:development)
         end
 
-        @container = {
-          autoload: Zeitwerk::Loader.new
-        }
+        @container = {}
       end
     end
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
@@ -111,7 +110,7 @@ module Ramverk
       #     use Rack::Static, root: "public", urls: %w[/assets]
       #   end
       def use(middleware, *args, &block)
-        configuration[:middleware] << [middleware, args, block].freeze
+        cfg[:_middleware] << [middleware, args, block].freeze
       end
 
       # Yield the block if the given environment matches the current.
@@ -192,9 +191,9 @@ module Ramverk
         return unless app[:logger]
 
         require_relative "middleware/request_logger"
-        cfg[:middleware].unshift([Ramverk::Middleware::RequestLogger,
-                                  [app[:logger], cfg[:logger_filter_params]],
-                                  nil])
+        cfg[:_middleware].unshift([Ramverk::Middleware::RequestLogger,
+                                   [app[:logger], cfg[:logger_filter_params]],
+                                   nil])
 
         app[:logger].level = cfg[:logger_level]
         app[:logger].formatter = cfg[:logger_formatter]
@@ -208,20 +207,20 @@ module Ramverk
         return if cfg[:autoload_paths].empty?
 
         cfg[:autoload_paths].each do |path|
-          app[:autoload].push_dir(File.join(cfg[:root], path))
+          cfg[:_autoload].push_dir(File.join(cfg[:root], path))
         end
 
         if cfg[:autoload_reload]
-          app[:autoload].enable_reloading
+          cfg[:_autoload].enable_reloading
 
           require_relative "middleware/reloader"
-          cfg[:middleware].unshift([Ramverk::Middleware::Reloader,
-                                    [app[:autoload]],
-                                    nil])
+          cfg[:_middleware].unshift([Ramverk::Middleware::Reloader,
+                                     [cfg[:_autoload]],
+                                     nil])
         end
 
-        app[:autoload].setup
-        app[:autoload].eager_load if cfg[:autoload_eager_load]
+        cfg[:_autoload].setup
+        cfg[:_autoload].eager_load if cfg[:autoload_eager_load]
       end
       # rubocop:enable Metrics/AbcSize
 
@@ -245,7 +244,7 @@ module Ramverk
       app.boot
 
       @app = Rack::Builder.new do
-        app.configuration[:middleware].each do |(mw, args, block)|
+        app.configuration[:_middleware].each do |(mw, args, block)|
           use mw, *args, &block
         end
 

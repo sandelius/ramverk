@@ -6,11 +6,13 @@ module Ramverk
     #
     # @private
     class Reloader
+      # @private
       def initialize(app, loader)
         @app = app
         @loader = loader
       end
 
+      # @private
       def call(env)
         @loader.reload
 
