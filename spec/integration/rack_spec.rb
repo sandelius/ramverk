@@ -11,9 +11,9 @@ RSpec.describe "Router Rack compatible", type: :request do
       set :autoload_paths, %w[spec/tmp]
 
       set :routes do
-        get "/say/:message", to: (lambda do |env|
+        get "/say/:message" do |env|
           [200, {}, ["I say, #{env['rutter.params']['message']}"]]
-        end)
+        end
       end
     end
   end

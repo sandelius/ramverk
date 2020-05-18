@@ -14,13 +14,12 @@ module Ramverk
   #
   # @abstract
   #
-  # @example Mounting (sub) applications
+  # @example
   #   class Application < Ramverk::Application
-  #     set :autoload_paths, %w[apps]
+  #     set :autoload_paths, %w[web]
   #
   #     set :routes do
-  #       mount Api::Application.new, at: "/v1", host: /\Aapi\./
-  #       mount Web::Application.new, at: "/"
+  #       root to: "pages#index"
   #     end
   #   end
   class Application # rubocop:disable Metrics/ClassLength
