@@ -12,7 +12,7 @@ RSpec.describe "Router Rack compatible", type: :request do
 
       set :routes do
         get "/say/:message" do |env|
-          [200, {}, ["I say, #{env['rutter.params']['message']}"]]
+          [200, {}, ["I say, #{env['router.params']['message']}"]]
         end
       end
     end

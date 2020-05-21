@@ -28,7 +28,7 @@ module Ramverk
       # rubocop:disable Metrics/AbcSize
       def log(env, status, _, began_at)
         req = Rack::Request.new(env)
-        params = (env["rutter.params"] || {}).merge(req.params)
+        params = (env["router.params"] || {}).merge(req.params)
 
         msg = format(FORMAT,
                      verb: req.request_method,
