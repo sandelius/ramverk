@@ -22,4 +22,23 @@ module Ramverk
   def self.env?(*environment)
     environment.include?(env)
   end
+
+  # Returns the application.
+  #
+  # @return [Ramverk::Application]
+  def self.application
+    @application
+  end
+
+  # @private
+  def self.application=(app)
+    raise "an application has already been registered" if @application
+
+    @application = app
+  end
+
+  # @private
+  def self.reset
+    @application = nil
+  end
 end

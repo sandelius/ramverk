@@ -55,6 +55,8 @@ module Ramverk
 
         @_container = {}
       end
+
+      Ramverk.application = base
     end
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 

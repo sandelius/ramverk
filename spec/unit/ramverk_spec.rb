@@ -25,4 +25,20 @@ RSpec.describe Ramverk do
         .to be(false)
     end
   end
+
+  describe ".application" do
+    it "returns the active application" do
+      app = Class.new(Ramverk::Application)
+
+      expect(Ramverk.application)
+        .to eq(app)
+    end
+
+    it "raises an error if an application already been registered" do
+      Class.new(Ramverk::Application)
+
+      expect { Class.new(Ramverk::Application) }
+        .to raise_error("an application has already been registered")
+    end
+  end
 end

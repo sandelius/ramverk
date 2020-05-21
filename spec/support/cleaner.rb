@@ -25,5 +25,8 @@ RSpec.configure do |config|
 
     # Clean tmp directory
     clean_tmp
+
+    # Reset framework
+    Ramverk.reset
   end
 end
