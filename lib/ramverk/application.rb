@@ -29,10 +29,10 @@ module Ramverk
       super
 
       base.class_eval do
-        @booted = false
-        @events = { pre_boot: [], post_boot: [] }
+        @_booted = false
+        @_events = { pre_boot: [], post_boot: [] }
 
-        @configuration = Configuration.new do
+        @_configuration = Configuration.new do
           add :root, Dir.pwd
           add :_middleware, []
 
@@ -53,7 +53,7 @@ module Ramverk
           add :autoload_reload, Ramverk.env?(:development)
         end
 
-        @container = {}
+        @_container = {}
       end
     end
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
@@ -61,8 +61,8 @@ module Ramverk
     class << self
       extend Forwardable
 
-      def_delegators :@configuration, :add, :set
-      def_delegators :@container, :[]=
+      def_delegators :@_configuration, :add, :set
+      def_delegators :@_container, :[]=
 
       # Alias for self.
       #
@@ -80,8 +80,9 @@ module Ramverk
       # Application configuration object.
       #
       # @return [Ramverk::Configuration]
-      attr_reader :configuration
-
+      def configuration
+        @_configuration
+      end
       alias cfg configuration
 
       # Gets an item from the container.
@@ -91,7 +92,7 @@ module Ramverk
       #
       # @return [*]
       def [](key)
-        @container.fetch(key)
+        @_container.fetch(key)
       end
 
       # Append a middleware to the stack.
@@ -149,9 +150,9 @@ module Ramverk
       #     end
       #   end
       def run(event, &block)
-        raise NameError, "unknown event ':#{event}'" unless @events.key?(event)
+        raise NameError, "unknown event ':#{event}'" unless @_events.key?(event)
 
-        @events[event] << block
+        @_events[event] << block
       end
 
       # Boot the application.
@@ -168,16 +169,16 @@ module Ramverk
       #
       #   Application.boot
       def boot
-        return self if @booted
-        @booted = true
+        return self if @_booted
+        @_booted = true
 
-        @events[:pre_boot].each { |cb| cb.call(app) }
+        @_events[:pre_boot].each { |cb| cb.call(app) }
 
         boot_logger
         boot_autoload
         boot_routes
 
-        @events[:post_boot].each { |cb| cb.call(app) }
+        @_events[:post_boot].each { |cb| cb.call(app) }
 
         freeze
       end
@@ -231,8 +232,8 @@ module Ramverk
 
       # @private
       def freeze
-        @container.freeze
-        @configuration.freeze
+        @_container.freeze
+        @_configuration.freeze
       end
     end
 
