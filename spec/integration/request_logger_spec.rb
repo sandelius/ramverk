@@ -3,9 +3,9 @@
 RSpec.describe "Request logging", type: :request do
   let :application do
     Class.new(Ramverk::Application) do
-      set :logger, Logger.new($stdout)
+      config.logger = Logger.new($stdout)
 
-      set :routes do
+      routes do
         get "/books", to: ->(_) { [200, {}, ["Hello"]] }
         get "/books/:id", to: ->(_) { [200, {}, ["Hello"]] }
       end

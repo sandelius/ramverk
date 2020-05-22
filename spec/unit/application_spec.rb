@@ -4,18 +4,10 @@ module Ramverk
   RSpec.describe Application do
     let(:app) { Class.new(Application) }
 
-    it "adds 'app' as an alias for self" do
-      expect(app)
-        .to eq(app.app)
-    end
-
-    context "configuration" do
-      it "adds alias for managing configuration" do
-        expect(app.configuration).to receive(:add)
-        app.add :name, "Tobias"
-
-        expect(app.configuration).to receive(:set)
-        app.set :name, "Sandelius"
+    describe ".configuration" do
+      it "returns application configuration" do
+        expect(app.configuration)
+          .to be_a(Configuration)
       end
     end
 
@@ -33,62 +25,13 @@ module Ramverk
       end
     end
 
-    describe ".use" do
-      it "append middleware to the stack" do
-        app.use Rack::Head
-        app.use Rack::Static, root: "public", urls: %w[/assets]
-
-        expect(app.configuration[:_middleware].map(&:first))
-          .to eq([Rack::Head, Rack::Static])
-      end
-    end
-
-    describe ".env" do
-      it "yields the block if the environment match" do
-        app.use Rack::Head
-
-        app.env :development do
-          app.use Rack::Static, root: "public", urls: %w[/assets]
-        end
-
-        app.env :test do
-          app.use Rack::ConditionalGet
-        end
-
-        expect(app.configuration[:_middleware].map(&:first))
-          .to eq([Rack::Head, Rack::ConditionalGet])
-      end
-    end
-
     describe ".boot" do
-      context "autoload" do
-        it "prepend a reloader middleware if reloading is enabled" do
-          app.use Rack::Head
-          app.set :autoload_paths, %w[spec/tmp]
-          app.set :autoload_reload, true
-          app.boot
-
-          expect(app.configuration[:_middleware].map(&:first))
-            .to eq([Ramverk::Middleware::Reloader,
-                    Ramverk::Middleware::RequestLogger,
-                    Rack::Head])
-        end
-      end
-
       context "logger" do
-        it "prepends a request logger" do
+        it "stores application logger in the container" do
           app.boot
 
-          expect(app.configuration[:_middleware].map(&:first))
-            .to eq([Ramverk::Middleware::RequestLogger])
-        end
-
-        it "skip request logger if logging is disabled" do
-          app.set :logger, nil
-          app.boot
-
-          expect(app.configuration[:_middleware].map(&:first))
-            .to eq([])
+          expect(app[:logger])
+            .to eq(app.configuration.logger)
         end
       end
 

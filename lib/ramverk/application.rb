@@ -1,10 +1,5 @@
 # frozen_string_literal: true
 
-require "logger"
-require "forwardable"
-
-require "rack"
-require "zeitwerk"
 require "rutter"
 
 require_relative "configuration"
@@ -16,120 +11,56 @@ module Ramverk
   #
   # @example
   #   class Application < Ramverk::Application
-  #     set :autoload_paths, %w[web]
+  #     config.autoload_paths << "lib"
+  #     config.autoload_paths << "lib/models"
+  #     config.autoload_paths << "apps"
   #
-  #     set :routes do
-  #       root to: "pages#index"
+  #     routes do
+  #       scope namespace: "web/controllers", as: :web do
+  #         root to: "pages#index"
+  #       end
+  #
+  #       scope "/api", namespace: "api/controllers", as: :api do
+  #         root to: "pages#index"
+  #       end
   #     end
   #   end
-  class Application # rubocop:disable Metrics/ClassLength
+  class Application
     # @private
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def self.inherited(base)
       super
 
       base.class_eval do
         @_booted = false
+        @_routes = (proc {})
         @_events = { pre_boot: [], post_boot: [] }
-
-        @_configuration = Configuration.new do
-          add :root, Dir.pwd
-          add :_middleware, []
-
-          # Routing
-          add :base_url, "http://localhost:9292"
-          add :routes, (proc {})
-
-          # Logging
-          add :logger, Logger.new(Ramverk.env?(:test) ? "/dev/null" : $stdout)
-          add :logger_level, Ramverk.env?(:production) ? :info : :debug
-          add :logger_formatter, LOGGER_DEFAULT_FORMATTER
-          add :logger_filter_params, %w[password password_confirmation]
-
-          # Autoloading
-          add :_autoload, Zeitwerk::Loader.new
-          add :autoload_paths, []
-          add :autoload_eager_load, !Ramverk.env?(:development)
-          add :autoload_reload, Ramverk.env?(:development)
-        end
-
+        @_configuration = Configuration.new
         @_container = {}
       end
 
       Ramverk.application = base
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     class << self
-      extend Forwardable
-
-      def_delegators :@_configuration, :add, :set
-      def_delegators :@_container, :[]=
-
-      # Alias for self.
-      #
-      # @return [Ramverk::Application]
-      #
-      # @example
-      #   class Application < Ramverk::Application
-      #     set :root, "/path/to/root"
-      #
-      #     app[:root] # => "/path/to/root"
-      #     app == self # => true
-      #   end
-      alias app itself
-
       # Application configuration object.
       #
       # @return [Ramverk::Configuration]
       def configuration
         @_configuration
       end
-      alias cfg configuration
+      alias config configuration
 
-      # Gets an item from the container.
+      # Defines the routes for this application.
       #
-      # @param key [Symbol]
-      #   Item identifier.
-      #
-      # @return [*]
-      def [](key)
-        @_container.fetch(key)
-      end
-
-      # Append a middleware to the stack.
-      #
-      # @param middleware [Class]
-      #   Middleware class.
-      # @param *args [*]
-      #   Middleware arguments.
-      # @param &block [Proc]
-      #   Middleware block argument.
+      # @yield
+      #   Block is evaluated inside the router context.
       #
       # @example
-      #   class Application < Ramverk::Application
-      #     use Rack::Head
-      #     use Rack::Static, root: "public", urls: %w[/assets]
+      #   Ramverk.application.routes do
+      #     # Router DSL
       #   end
-      def use(middleware, *args, &block)
-        cfg[:_middleware] << [middleware, args, block].freeze
-      end
-
-      # Yield the block if the given environment matches the current.
-      #
-      # @param environment [Symbol]
-      # @yieldparam app [Ramverk::Application]
-      #
-      # @example
-      #   class Application < Ramverk::Application
-      #     use Rack::Head
-      #
-      #     env :development do
-      #       use Rack::Static, root: "public", urls: %w[/assets]
-      #     end
-      #   end
-      def env(environment)
-        yield self if Ramverk.env?(environment)
+      def routes(&block)
+        @_routes = block
       end
 
       # Register a callback that will be evauluated when the event is emitted.
@@ -157,6 +88,31 @@ module Ramverk
         @_events[event] << block
       end
 
+      # Gets an item from the container.
+      #
+      # @param key [Symbol]
+      #   Item identifier.
+      #
+      # @return [*]
+      #
+      # @raise [KeyError]
+      #   If item has not been registered in the container.
+      def [](key)
+        @_container.fetch(key) do
+          raise KeyError, "key ':#{key}' could not be found in the container"
+        end
+      end
+
+      # Sets an item in the container.
+      #
+      # @param key [Symbol]
+      #   Item identifier.
+      # @param value [*]
+      #   Item value.
+      def []=(key, value)
+        @_container[key] = value
+      end
+
       # Boot the application.
       #
       # Booting the application manually is only needed when you need to use
@@ -174,68 +130,28 @@ module Ramverk
         return self if @_booted
         @_booted = true
 
-        @_events[:pre_boot].each { |cb| cb.call(app) }
+        @_events[:pre_boot].each { |cb| cb.call(self) }
 
-        boot_logger
-        boot_autoload
-        boot_routes
+        configuration.boot
+        container_boot
 
-        @_events[:post_boot].each { |cb| cb.call(app) }
+        @_events[:post_boot].each { |cb| cb.call(self) }
 
         freeze
       end
 
       # @private
-      # rubocop:disable Metrics/AbcSize
-      def boot_logger
-        app[:logger] = cfg[:logger]
-
-        return unless app[:logger]
-
-        require_relative "middleware/request_logger"
-        cfg[:_middleware].unshift([Ramverk::Middleware::RequestLogger,
-                                   [app[:logger], cfg[:logger_filter_params]],
-                                   nil])
-
-        app[:logger].level = cfg[:logger_level]
-        app[:logger].formatter = cfg[:logger_formatter]
-        app[:logger].freeze
-      end
-      # rubocop:enable Metrics/AbcSize
-
-      # @private
-      # rubocop:disable Metrics/AbcSize
-      def boot_autoload
-        return if cfg[:autoload_paths].empty?
-
-        cfg[:autoload_paths].each do |path|
-          cfg[:_autoload].push_dir(File.join(cfg[:root], path))
-        end
-
-        if cfg[:autoload_reload]
-          cfg[:_autoload].enable_reloading
-
-          require_relative "middleware/reloader"
-          cfg[:_middleware].unshift([Ramverk::Middleware::Reloader,
-                                     [cfg[:_autoload]],
-                                     nil])
-        end
-
-        cfg[:_autoload].setup
-        cfg[:_autoload].eager_load if cfg[:autoload_eager_load]
-      end
-      # rubocop:enable Metrics/AbcSize
-
-      # @private
-      def boot_routes
-        app[:router] = Rutter.new(base: cfg[:base_url], &cfg[:routes]).freeze
-        app[:routes] = Rutter::Routes.new(app[:router])
+      def container_boot
+        @_container[:logger] = configuration.logger
+        @_container[:router] = Rutter.new(base: configuration.base_url, &@_routes).freeze
+        @_container[:routes] = Rutter::Routes.new(@_container[:router]).freeze
       end
 
       # @private
       def freeze
         @_container.freeze
-        @_configuration.freeze
+
+        super
       end
     end
 
@@ -246,7 +162,7 @@ module Ramverk
       app.boot
 
       @app = Rack::Builder.new do
-        app.configuration[:_middleware].each do |(mw, args, block)|
+        app.configuration.middleware.stack.each do |(mw, args, block)|
           use mw, *args, &block
         end
 

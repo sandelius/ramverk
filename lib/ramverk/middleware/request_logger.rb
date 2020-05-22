@@ -11,9 +11,7 @@ module Ramverk
     #   GET[200] /books/5 from 120.0.0.1 in 0.0032 with {"id"=>"5"}
     class RequestLogger < Rack::CommonLogger
       # @private
-      # rubocop:disable Layout/LineLength
       FORMAT = %(%<verb>s[%<status>s] '%<path>s' for %<ip>s in %<time>0.4f with %<params>s)
-      # rubocop:enable Layout/LineLength
 
       # @private
       def initialize(app, logger, filter_params = [])
