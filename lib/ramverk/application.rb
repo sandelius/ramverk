@@ -74,15 +74,15 @@ module Ramverk
       #
       # @example
       #   class Application < Ramverk::Application
-      #     run :pre_boot do
+      #     on :pre_boot do
       #       # Evaluated before boot process
       #     end
       #
-      #     run :post_boot do
+      #     on :post_boot do
       #       # Evaluated after boot process, but before freeze
       #     end
       #   end
-      def run(event, &block)
+      def on(event, &block)
         raise NameError, "unknown event ':#{event}'" unless @_events.key?(event)
 
         @_events[event] << block

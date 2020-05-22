@@ -39,14 +39,14 @@ module Ramverk
         it "execute the callbacks on events" do
           data = []
 
-          app.run :post_boot do |application|
+          app.on :post_boot do |application|
             expect(app)
               .to eq(application)
 
             data << :post_boot
           end
 
-          app.run :pre_boot do |application|
+          app.on :pre_boot do |application|
             expect(app)
               .to eq(application)
 
@@ -65,7 +65,7 @@ module Ramverk
         it "raises an error if event name is unknown" do
           msg = "unknown event ':unknown'"
 
-          expect { app.run(:unknown) {} }
+          expect { app.on(:unknown) {} }
             .to raise_error(NameError, msg)
         end
       end
