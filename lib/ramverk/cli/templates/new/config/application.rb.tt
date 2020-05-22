@@ -1,0 +1,33 @@
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "ramverk"
+
+if Ramverk.env?(:development, :test)
+  require "dotenv"
+  Dotenv.load(".env.#{Ramverk.env}")
+end
+
+module <%= config[:app_namespace] %>
+  class Application < Ramverk::Application
+    require_relative "routes"
+
+    # Paths of which Ramverk will autoload constants.
+    config.autoload_paths << "lib"
+
+    # DEVELOPMENT
+
+    config.environment :development do
+    end
+
+    # TEST
+
+    config.environment :test do
+    end
+
+    # PRODUCTION
+
+    config.environment :production do
+    end
+  end
+end

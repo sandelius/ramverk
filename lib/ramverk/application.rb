@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-require "rutter"
-
 require_relative "configuration"
+require_relative "router"
 
 module Ramverk
   # Represents a Ramverk application.
@@ -13,16 +12,10 @@ module Ramverk
   #   class Application < Ramverk::Application
   #     config.autoload_paths << "lib"
   #     config.autoload_paths << "lib/models"
-  #     config.autoload_paths << "apps"
+  #     config.autoload_paths << "web"
   #
   #     routes do
-  #       scope namespace: "web/controllers", as: :web do
-  #         root to: "pages#index"
-  #       end
-  #
-  #       scope "/api", namespace: "api/controllers", as: :api do
-  #         root to: "pages#index"
-  #       end
+  #       root to: "controllers/pages#index"
   #     end
   #   end
   class Application
@@ -143,7 +136,7 @@ module Ramverk
       # @private
       def container_boot
         @_container[:logger] = configuration.logger
-        @_container[:router] = Rutter.new(base: configuration.base_url, &@_routes).freeze
+        @_container[:router] = Router.new(base: configuration.base_url, &@_routes).freeze
         @_container[:routes] = Rutter::Routes.new(@_container[:router]).freeze
       end
 

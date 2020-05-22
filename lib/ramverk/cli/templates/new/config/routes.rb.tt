@@ -1,0 +1,7 @@
+# frozen_string_literal: true
+
+Ramverk.application.routes do
+  get "/" do |env|
+    [200, {}, ["Welcome to Ramverk!"]]
+  end
+end

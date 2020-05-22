@@ -4,11 +4,11 @@ require "logger"
 require "pathname"
 require "zeitwerk"
 
-require_relative "configuration/middleware"
-
 module Ramverk
   # Project configuration.
   class Configuration
+    require_relative "configuration/middleware"
+
     # Project root path.
     #
     # @return [Pathname]
@@ -74,7 +74,7 @@ module Ramverk
       @root = Pathname.new(Dir.pwd)
 
       # Routing
-      @base_url = "http://localhost:9292"
+      @base_url = ENV.fetch("BASE_URL", "http://localhost:9292")
 
       # Middleware
       @middleware = Middleware.new

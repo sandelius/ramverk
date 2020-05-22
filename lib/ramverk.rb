@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "ramverk/version"
-require_relative "ramverk/application"
-
 # The Ruby Application Framework.
 module Ramverk
+  require_relative "ramverk/version"
+  require_relative "ramverk/application"
+
   # Get the current environment status.
   #
   # @return [Symbol]

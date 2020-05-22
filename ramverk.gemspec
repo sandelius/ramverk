@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
   spec.test_files = spec.files.grep(%r{^(spec)/})
   spec.require_paths = ["lib"]
 
+  spec.add_runtime_dependency "thor", "~> 1.0"
   spec.add_runtime_dependency "rack", "~> 2.0"
   spec.add_runtime_dependency "zeitwerk", "~> 2.3"
   spec.add_runtime_dependency "rutter", "~> 0.3.2"

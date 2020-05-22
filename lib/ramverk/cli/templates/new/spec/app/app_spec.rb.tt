@@ -1,0 +1,8 @@
+# frozen_string_literal: true
+
+RSpec.describe <%= config[:app_namespace] %> do
+  it "works" do
+    expect(true)
+      .to eq(true)
+  end
+end

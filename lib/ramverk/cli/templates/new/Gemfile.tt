@@ -1,0 +1,16 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+# The Ruby Application Framework.
+gem "ramverk", "~> <%= Ramverk::VERSION %>"
+
+group :development, :test do
+  # A Ruby gem to load environment variables from `.env`.
+  gem "dotenv", "~> 2.7"
+end
+
+group :test do
+  # Behaviour Driven Development for Ruby.
+  gem "rspec", "~> 3.8"
+end
