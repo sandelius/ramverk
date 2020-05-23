@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+class RackCompatibleController < Ramverk::Controller
+  def message
+    render "I say, #{params['message']}"
+  end
+end
+
 RSpec.describe "Rack compatible", type: :request do
   let :application do
     Class.new(Ramverk::Application) do
@@ -11,9 +17,7 @@ RSpec.describe "Rack compatible", type: :request do
       config.autoload_paths = %w[spec/tmp]
 
       routes do
-        get "/say/:message" do |env|
-          [200, {}, ["I say, #{env['router.params']['message']}"]]
-        end
+        get "/say/:message", to: "RackCompatibleController#message"
       end
     end
   end

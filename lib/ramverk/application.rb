@@ -2,6 +2,7 @@
 
 require_relative "configuration"
 require_relative "router"
+require_relative "controller"
 
 module Ramverk
   # Represents a Ramverk application.
