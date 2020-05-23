@@ -7,16 +7,8 @@ require_relative "../config/boot"
 # Requires supporting ruby files used for testing.
 Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
 
-require "rack/test"
-
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
-  config.include Rack::Test::Methods, type: :request
-
-  def app
-    Ramverk.application.new
-  end
-
   # Disable monkey-pachting core ruby.
   config.disable_monkey_patching!
 end

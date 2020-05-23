@@ -1,12 +1,7 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
-require "ramverk"
-
-if Ramverk.env?(:development, :test)
-  require "dotenv"
-  Dotenv.load(".env.#{Ramverk.env}")
-end
+require "ramverk/setup"
 
 module <%= config[:app_namespace] %>
   class Application < Ramverk::Application
