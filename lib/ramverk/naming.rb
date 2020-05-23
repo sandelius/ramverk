@@ -43,5 +43,20 @@ module Ramverk
       delimiters.map! { |delimiter| delimiter == "_" ? "" : "::" }
       words.zip(delimiters).join
     end
+
+    # Normalize the given string/symbol to a valid route name.
+    #
+    # @param string [String, Symbol]
+    #   Name to be normalized.
+    #
+    # @return [Symbol]
+    #   Normalized route name.
+    def route_name(string)
+      string = underscore(string)
+      string.tr!("/", "_")
+      string.gsub!(/[_]{2,}/, "_")
+      string.gsub!(/\A_|_\z/, "")
+      string.to_sym
+    end
   end
 end

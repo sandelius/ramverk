@@ -29,6 +29,13 @@ module Ramverk
         expect(body.join)
           .to eq("Hello World")
       end
+
+      it "normalize route names" do
+        route = router.get "/", to: endpoint, as: "_wierd/__name__"
+
+        expect(router.named_map[:wierd_name])
+          .to eq(route)
+      end
     end
 
     describe "verbs" do
@@ -53,6 +60,8 @@ module Ramverk
         expect(router.flat_map)
           .to be_frozen
         expect(router.verb_map)
+          .to be_frozen
+        expect(router.named_map)
           .to be_frozen
       end
     end
