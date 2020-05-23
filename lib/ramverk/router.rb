@@ -92,6 +92,8 @@ module Ramverk
     def add(verb, path, to: nil, as: nil, constraints: {}, &block)
       to = block if block_given?
 
+      raise "endpoint missing, use to: or a block" unless to
+
       route = Route.new(path, to, constraints)
 
       @flat_map << route

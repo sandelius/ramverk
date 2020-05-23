@@ -30,6 +30,11 @@ module Ramverk
           .to eq("Hello World")
       end
 
+      it "raises an error if no endpoint is given" do
+        expect { router.get "/" }
+          .to raise_error("endpoint missing, use to: or a block")
+      end
+
       it "normalize route names" do
         route = router.get "/", to: endpoint, as: "_wierd/__name__"
 
