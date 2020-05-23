@@ -51,6 +51,8 @@ module Ramverk
         template "new/spec/spec_helper.rb.tt", root.join("spec", "spec_helper.rb"), config
         template "new/spec/app/app_spec.rb.tt", root.join("spec", app_name, "#{app_name}_spec.rb"), config
         create_file root.join("spec", "support", ".gitkeep")
+
+        template "new/public/robots.txt.tt", root.join("public", "robots.txt"), config
       end
 
       # Source path for templates used by generators.
