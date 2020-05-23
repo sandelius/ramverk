@@ -88,6 +88,7 @@ module Ramverk
     end
 
     # @private
+    # rubocop:disable Metrics/ParameterLists
     def add(verb, path, to: nil, as: nil, constraints: {}, &block)
       to = block if block_given?
 
@@ -105,6 +106,7 @@ module Ramverk
 
       route
     end
+    # rubocop:enable Metrics/ParameterLists
 
     # @private
     VERBS.each do |verb|
