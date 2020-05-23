@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe <%= config[:app_namespace] %> do
   it "works" do
     expect(true)

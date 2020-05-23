@@ -2,6 +2,9 @@
 
 source "https://rubygems.org"
 
+# A make-like build utility for Ruby.
+gem "rake"
+
 # The Ruby Application Framework.
 gem "ramverk", "~> <%= Ramverk::VERSION %>"
 
@@ -13,4 +16,6 @@ end
 group :test do
   # Behaviour Driven Development for Ruby.
   gem "rspec", "~> 3.8"
+  # Rack::Test is a layer on top of Rack's MockRequest.
+  gem "rack-test", "~> 1.1"
 end
