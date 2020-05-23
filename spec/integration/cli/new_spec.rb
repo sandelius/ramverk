@@ -34,6 +34,8 @@ RSpec.describe "ramverk new APP_NAME", type: :cli do
         .to include_text("module TestApp")
       expect(root.join("lib", "test_app", ".gitkeep"))
         .to be_a_file
+      expect(root.join("lib", "models", ".gitkeep"))
+        .to be_a_file
 
       expect(root.join("config", "application.rb"))
         .to be_a_file

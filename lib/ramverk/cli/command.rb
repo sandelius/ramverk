@@ -43,6 +43,7 @@ module Ramverk
 
         template "new/lib/app.rb.tt", root.join("lib", "#{app_name}.rb"), config
         create_file root.join("lib", app_name, ".gitkeep")
+        create_file root.join("lib", "models", ".gitkeep")
 
         template "new/config/application.rb.tt", root.join("config", "application.rb"), config
         template "new/config/routes.rb.tt", root.join("config", "routes.rb"), config
