@@ -46,6 +46,11 @@ module Ramverk
     # @return [Array<String>]
     attr_accessor :logger_filter_params
 
+    # Autoloader object.
+    #
+    # @return [Zeitwerk::Loader]
+    attr_reader :autoload
+
     # Paths to (re)load constants from. All paths should be relative to project
     # root path.
     #
@@ -86,6 +91,7 @@ module Ramverk
       @logger_filter_params = %w[password password_confirmation]
 
       # Autoloading
+      @autoload = Zeitwerk::Loader.new
       @autoload_paths = []
       @autoload_eager_load = env != :development
       @autoload_reload = env == :development
@@ -151,19 +157,17 @@ module Ramverk
     def boot_autoload
       return if !autoload_paths || autoload_paths.empty?
 
-      loader = Zeitwerk::Loader.new
-
-      autoload_paths.each { |path| loader.push_dir(root.join(path)) }
+      autoload_paths.each { |path| autoload.push_dir(root.join(path)) }
 
       if autoload_reload
-        loader.enable_reloading
+        autoload.enable_reloading
 
         require_relative "middleware/reloader"
-        middleware.prepend Ramverk::Middleware::Reloader, loader
+        middleware.prepend Ramverk::Middleware::Reloader, autoload
       end
 
-      loader.setup
-      loader.eager_load if autoload_eager_load
+      autoload.setup
+      autoload.eager_load if autoload_eager_load
     end
     # rubocop:enable Metrics/AbcSize
 

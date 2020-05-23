@@ -14,7 +14,7 @@ module Ramverk
     # @return [String]
     #
     # @example
-    #   string = "Ramverk::RamverkNaming"
+    #   string = "Ramverk::RamverNaming"
     #   Ramverk::Naming.underscore(string) # => 'ramverk/ramverk_naming'
     def underscore(string)
       string = string.dup.to_s
@@ -36,7 +36,7 @@ module Ramverk
     #
     # @example
     #   string = "ramverk/ramverk_naming"
-    #   Ramverk::Naming.classify(string) # => 'Ramverk::RamverkNaming'
+    #   Ramverk::Naming.classify(string) # => 'Ramverk::RamverNaming'
     def classify(string)
       words = underscore(string).split(%r{_|::|\/|\-}).map!(&:capitalize)
       delimiters = underscore(string).scan(%r{_|::|\/|\-})

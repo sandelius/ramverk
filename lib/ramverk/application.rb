@@ -10,13 +10,11 @@ module Ramverk
   #
   # @example
   #   class Application < Ramverk::Application
+  #     require_relative "routes"
+  #
   #     config.autoload_paths << "lib"
   #     config.autoload_paths << "lib/models"
-  #     config.autoload_paths << "web"
-  #
-  #     routes do
-  #       root to: "controllers/pages#index"
-  #     end
+  #     config.autoload_paths << "apps"
   #   end
   class Application
     # @private
@@ -135,9 +133,8 @@ module Ramverk
 
       # @private
       def container_boot
-        @_container[:logger] = configuration.logger
-        @_container[:router] = Router.new(base: configuration.base_url, &@_routes).freeze
-        @_container[:routes] = Rutter::Routes.new(@_container[:router]).freeze
+        self[:logger] = configuration.logger
+        self[:router] = Router.new(base_url: configuration.base_url, &@_routes).freeze
       end
 
       # @private
@@ -150,7 +147,10 @@ module Ramverk
 
     # Initializes the application.
     #
-    # @private
+    # @example
+    #   # config.ru
+    #
+    #   run Ramverk.application.new
     def initialize(app: self.class)
       app.boot
 
@@ -163,19 +163,9 @@ module Ramverk
       end.freeze
     end
 
-    # Rack compatible endpoint.
-    #
-    # @param env [Hash] Rack environment hash.
-    #
-    # @return [Array]
-    #
     # @private
     def call(env)
       @app.call(env)
     end
-
-    # @private
-    LOGGER_DEFAULT_FORMATTER = ->(_, _, _, msg) { "#{msg}\n" }
-    private_constant :LOGGER_DEFAULT_FORMATTER
   end
 end
