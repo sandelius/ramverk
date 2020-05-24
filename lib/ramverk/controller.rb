@@ -1,17 +1,37 @@
 # frozen_string_literal: true
 
 module Ramverk
-  # The `Controller` is the fundamental building block of your application's
-  # request/response cycle.
+  # The Controller is responsible for returning a response to the client.
+  #
+  # Reserved action names:
+  #   - request
+  #   - params
+  #   - headers
+  #   - redirect
+  #   - render
+  #   - call
   class Controller
+    require_relative "controller/configuration"
+
     # @private
     def self.inherited(base)
       super
 
+      base.configuration = config&.dup
       base._filters = _filters&.dup || []
     end
 
+    # @private
+    @configuration = Configuration.new
+
     class << self
+      # Controller configuration.
+      #
+      # @return [Ramverk::Controller::Configuration]
+      attr_accessor :configuration
+
+      alias config configuration
+
       # @private
       attr_accessor :_filters
 
@@ -51,7 +71,7 @@ module Ramverk
 
       # @private
       def call(env)
-        action = env["router.action"]
+        action = env["router.action"].to_sym
 
         new(action).call(env)
       end
@@ -59,11 +79,18 @@ module Ramverk
 
     # Initialize the controller.
     #
-    # @param action [Symbol, String]
+    # @param action [Symbol]
     #   Action/method to be dispatched.
     def initialize(action)
       @_action = action
-      @_response = Rack::Response.new
+      @_response = Rack::Response.new([], 200, self.class.configuration.default_headers)
+    end
+
+    # Returns response headers that's gonna be sent to the client.
+    #
+    # @return [Hash]
+    def headers
+      @_response.headers
     end
 
     # Request object that hold information about the request.
@@ -80,9 +107,7 @@ module Ramverk
     # @return [Hash]
     # rubocop:disable Naming/MemoizedInstanceVariableName
     def params
-      @_params ||= begin
-        request.params.merge(@_env["router.params"] || {})
-      end
+      @_params ||= request.params.merge(@_env["router.params"] || {})
     end
     # rubocop:enable Naming/MemoizedInstanceVariableName
 
@@ -99,7 +124,9 @@ module Ramverk
     #   If content type is unknown.
     #
     # @throw :halt
-    def render(body, as: :html, status: 200)
+    def render(body, as: nil, status: 200)
+      as ||= self.class.configuration.default_format
+
       type = Rack::Mime::MIME_TYPES.fetch(".#{as}") do
         raise "unkown content type ':#{as}'"
       end

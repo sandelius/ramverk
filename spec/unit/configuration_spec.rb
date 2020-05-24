@@ -43,6 +43,13 @@ module Ramverk
       end
     end
 
+    describe "#controller" do
+      it "returns controller configuration" do
+        expect(configuration.controller)
+          .to eq(Controller.configuration)
+      end
+    end
+
     describe "logger" do
       context "level" do
         it "is set to :debug by default" do

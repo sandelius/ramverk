@@ -39,6 +39,8 @@ module Ramverk
 
   # @private
   def self.reset
+    Controller.configuration.reset
+
     @application = nil
   end
 end

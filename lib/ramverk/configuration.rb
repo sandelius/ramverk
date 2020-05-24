@@ -73,6 +73,11 @@ module Ramverk
     # @return [Boolean]
     attr_accessor :autoload_reload
 
+    # Controller configuration.
+    #
+    # @return [Ramverk::Controller::Configuration]
+    attr_reader :controller
+
     # @private
     # rubocop:disable Metrics/AbcSize
     def initialize(env: Ramverk.env)
@@ -97,6 +102,9 @@ module Ramverk
       @autoload_paths = []
       @autoload_eager_load = env != :development
       @autoload_reload = env == :development
+
+      # Controller
+      @controller = Controller.configuration
     end
     # rubocop:enable Metrics/AbcSize
 
