@@ -74,8 +74,10 @@ module Ramverk
     attr_accessor :autoload_reload
 
     # @private
+    # rubocop:disable Metrics/AbcSize
     def initialize(env: Ramverk.env)
       @env = env
+      @dynamic_groups = {}
       @root = Pathname.new(Dir.pwd)
 
       # Routing
@@ -96,6 +98,7 @@ module Ramverk
       @autoload_eager_load = env != :development
       @autoload_reload = env == :development
     end
+    # rubocop:enable Metrics/AbcSize
 
     # Yield the block if the given environment matches the current.
     #
@@ -131,7 +134,9 @@ module Ramverk
 
     # @private
     def freeze
-      middleware.freeze
+      @middleware.freeze
+      @dynamic_groups.freeze
+      @dynamic_groups.each_value(&:freeze)
 
       super
     end
@@ -170,6 +175,23 @@ module Ramverk
       autoload.eager_load if autoload_eager_load
     end
     # rubocop:enable Metrics/AbcSize
+
+    # @private
+    def method_missing(meth, *args, &block)
+      return super unless meth.to_s.end_with?("=")
+
+      key = meth.to_s.sub("=", "")
+      @dynamic_groups[key] = args.first
+
+      define_singleton_method(key) { @dynamic_groups[key] }
+    end
+
+    # @private
+    # :nocov:
+    def respond_to_missing?(name, include_private = false)
+      super
+    end
+    # :nocov:
 
     # @private
     LOGGER_DEFAULT_FORMATTER = ->(_, _, _, msg) { "#{msg}\n" }

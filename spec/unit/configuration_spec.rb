@@ -116,6 +116,35 @@ module Ramverk
       end
     end
 
+    describe "dynamic configuration" do
+      it "support settings dynamic configuration" do
+        configuration.custom = Struct.new(:name).new
+
+        expect(configuration.respond_to?(:custom))
+          .to be(true)
+
+        configuration.custom.name = "Tobias"
+
+        expect(configuration.custom.name)
+          .to eq("Tobias")
+      end
+
+      it "custom configuration id frozen upon boot" do
+        configuration.custom = Struct.new(:name).new
+
+        expect(configuration.custom)
+          .not_to be_frozen
+
+        configuration.boot
+
+        expect(configuration.custom)
+          .to be_frozen
+
+        expect { configuration.custom2 = Struct.new(:name).new }
+          .to raise_error(/modify frozen/)
+      end
+    end
+
     describe "#boot" do
       context "autoload" do
         it "prepend a reloader middleware if reloading is enabled" do
