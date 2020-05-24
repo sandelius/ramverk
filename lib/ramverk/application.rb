@@ -42,6 +42,15 @@ module Ramverk
       end
       alias config configuration
 
+      # Application root path.
+      #
+      # @return [Pathname]
+      #
+      # @see Ramverk::Configuration#root
+      def root
+        configuration.root
+      end
+
       # Defines the routes for this application.
       #
       # @yield
