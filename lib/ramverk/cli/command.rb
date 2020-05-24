@@ -10,7 +10,7 @@ module Ramverk
   module Cli
     # Main command class for the Ramverk framework.
     #
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
     class Command < Thor
       include Thor::Actions
 
@@ -70,6 +70,6 @@ module Ramverk
         File.expand_path("templates", __dir__)
       end
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
   end
 end

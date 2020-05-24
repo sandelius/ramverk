@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Style/Documentation
+
 # puma -e production -t 16:16
 
 require "bundler/setup"
@@ -28,3 +30,5 @@ class Application < Ramverk::Application
 end
 
 run Application.new
+
+# rubocop:enable Style/Documentation
