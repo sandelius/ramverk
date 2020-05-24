@@ -46,8 +46,15 @@ RSpec.describe "ramverk new APP_NAME", type: :cli do
 
       expect(root.join("spec", "spec_helper.rb"))
         .to be_a_file
-      expect(root.join("spec", "test_app", "test_app_spec.rb"))
+      expect(root.join("spec", "lib", "test_app_spec.rb"))
         .to include_text("RSpec.describe TestApp do")
+      expect(root.join("spec", "app", "controllers", "pages_spec.rb"))
+        .to be_a_file
+
+      expect(root.join("app", "controllers", "application.rb"))
+        .to be_a_file
+      expect(root.join("app", "controllers", "pages.rb"))
+        .to be_a_file
 
       expect(root.join("public/robots.txt"))
         .to be_a_file

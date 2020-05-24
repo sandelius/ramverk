@@ -50,8 +50,12 @@ module Ramverk
         template "new/config/boot.rb.tt", root.join("config", "boot.rb"), config
 
         template "new/spec/spec_helper.rb.tt", root.join("spec", "spec_helper.rb"), config
-        template "new/spec/app/app_spec.rb.tt", root.join("spec", app_name, "#{app_name}_spec.rb"), config
+        template "new/spec/lib/app_spec.rb.tt", root.join("spec", "lib", "#{app_name}_spec.rb"), config
+        template "new/spec/app/controllers/pages_spec.rb.tt", root.join("spec", "app", "controllers", "pages_spec.rb"), config
         create_file root.join("spec", "support", ".gitkeep")
+
+        template "new/app/controllers/application.rb.tt", root.join("app", "controllers", "application.rb"), config
+        template "new/app/controllers/pages.rb.tt", root.join("app", "controllers", "pages.rb"), config
 
         template "new/public/robots.txt.tt", root.join("public", "robots.txt"), config
       end

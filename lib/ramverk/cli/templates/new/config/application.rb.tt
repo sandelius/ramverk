@@ -10,6 +10,7 @@ module <%= config[:app_namespace] %>
     # Paths of which Ramverk will autoload constants.
     config.autoload_paths << "lib"
     config.autoload_paths << "lib/models"
+    config.autoload_paths << "app"
 
     # DEVELOPMENT
 

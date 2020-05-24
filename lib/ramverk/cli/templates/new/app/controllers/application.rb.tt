@@ -1,0 +1,4 @@
+# frozen_string_literal: true
+
+class Controllers::Application < Ramverk::Controller
+end
