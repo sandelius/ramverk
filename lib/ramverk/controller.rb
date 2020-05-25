@@ -17,7 +17,7 @@ module Ramverk
     def self.inherited(base)
       super
 
-      base.configuration = config&.dup
+      base.configuration = configuration&.dup
       base._filters = _filters&.dup || []
     end
 
