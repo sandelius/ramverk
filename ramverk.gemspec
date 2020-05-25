@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "rack", "~> 2.0"
   spec.add_runtime_dependency "zeitwerk", "~> 2.3"
   spec.add_runtime_dependency "mustermann", "~> 1.1"
+  spec.add_runtime_dependency "tilt", "~> 2.0"
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"

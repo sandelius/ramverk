@@ -2,6 +2,8 @@
 
 class Controllers::Pages < Controllers::Application
   def welcome
-    render "Welcome to Ramverk!"
+    assign :message, "Welcome to Ramverk!"
+
+    render Views::Books, "books/welcome.erb"
   end
 end

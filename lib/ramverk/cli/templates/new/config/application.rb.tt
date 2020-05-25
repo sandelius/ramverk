@@ -12,6 +12,9 @@ module <%= config[:app_namespace] %>
     config.autoload_paths << "lib/models"
     config.autoload_paths << "app"
 
+    # View templates location(s)
+    config.view.template_paths << "app/templates"
+
     # DEVELOPMENT
 
     config.environment :development do
