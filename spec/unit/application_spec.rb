@@ -25,6 +25,13 @@ module Ramverk
       end
     end
 
+    describe ".root" do
+      it "is an alias for configuration.root" do
+        expect(app.root)
+          .to eq(app.configuration.root)
+      end
+    end
+
     describe ".boot" do
       context "logger" do
         it "stores application logger in the container" do
