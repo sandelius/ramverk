@@ -43,6 +43,16 @@ module Ramverk
       end
     end
 
+    describe "#root" do
+      it  "adds a GET route for the root path (/)" do
+        route = router.root to: endpoint
+
+        expect(route.template)
+          .to eq("/")
+        expect(router.named_map[:root])
+          .to eq(route)
+      end
+    end
     describe "verbs" do
       Router::VERBS.each do |verb|
         describe "##{verb.downcase}" do

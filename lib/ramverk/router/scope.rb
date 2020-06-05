@@ -17,6 +17,11 @@ module Ramverk
       end
 
       # @private
+      def root(to:, &block)
+        get "/", to: to, as: :root, &block
+      end
+
+      # @private
       def scope(path = nil, namespace: nil, as: nil, &block)
         path = _join(@_path, path) if path
         namespace = _join(@_namespace, namespace)

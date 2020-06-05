@@ -22,6 +22,21 @@ module Ramverk
         .to eq(route)
     end
 
+    describe "#root" do
+      it  "adds a GET route for the root path (/)" do
+        router.scope "/books", as: :books do
+          root to: "books#index"
+        end
+
+        route = router.flat_map.first
+
+        expect(route.template)
+          .to eq("/books")
+        expect(router.named_map[:books_root])
+          .to eq(route)
+      end
+    end
+
     describe "verbs" do
       let(:scope) { router.scope }
 

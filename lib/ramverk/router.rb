@@ -70,6 +70,17 @@ module Ramverk
       instance_eval(&block) if block_given?
     end
 
+    # Creates a root route in the current scope named `:root`.
+    #
+    # @param to [#call, String]
+    #    Route endpoint.
+    #
+    # @yield [env]
+    #   Route endpoint as a block.
+    def root(to:, &block)
+      get "/", to: to, as: :root, &block
+    end
+
     # Create a scoped set of routes.
     #
     # @param path [String]
