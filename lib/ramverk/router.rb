@@ -70,6 +70,21 @@ module Ramverk
       instance_eval(&block) if block_given?
     end
 
+    # Creates a scope bit.
+    #
+    # @param name [Symbol]
+    #   Name of the bit.
+    # @param path [String]
+    #   Path prefix.
+    #
+    # @yield
+    #   Block is evaluated inside the created bit/scope context.
+    #
+    # @return [Ramverk::Router::Scope]
+    def bit(name, path: nil, &block)
+      scope path, namespace: "#{name}/controllers", as: name, &block
+    end
+
     # Creates a root route in the current scope named `:root`.
     #
     # @param to [#call, String]

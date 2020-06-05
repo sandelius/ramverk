@@ -51,11 +51,11 @@ module Ramverk
 
         template "new/spec/spec_helper.rb.tt", root.join("spec", "spec_helper.rb"), config
         template "new/spec/lib/app_spec.rb.tt", root.join("spec", "lib", "#{app_name}_spec.rb"), config
-        template "new/spec/app/controllers/pages_spec.rb.tt", root.join("spec", "app", "controllers", "pages_spec.rb"), config
+        template "new/spec/bits/web/controllers/pages_spec.rb.tt", root.join("spec", "bits", "web", "controllers", "pages_spec.rb"), config
         create_file root.join("spec", "support", ".gitkeep")
 
-        template "new/app/controllers/application.rb.tt", root.join("app", "controllers", "application.rb"), config
-        template "new/app/controllers/pages.rb.tt", root.join("app", "controllers", "pages.rb"), config
+        template "new/bits/web/controllers/application.rb.tt", root.join("bits", "web", "controllers", "application.rb"), config
+        template "new/bits/web/controllers/pages.rb.tt", root.join("bits", "web", "controllers", "pages.rb"), config
 
         template "new/public/robots.txt.tt", root.join("public", "robots.txt"), config
       end

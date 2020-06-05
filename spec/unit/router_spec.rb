@@ -53,6 +53,35 @@ module Ramverk
           .to eq(route)
       end
     end
+
+    describe "#bit" do
+      it "creates a special scope to match an application bit" do
+        router.bit :web do
+          get "books", to: "books#index", as: :books
+        end
+
+        route = router.named_map[:web_books]
+
+        expect(route.template)
+          .to eq("/books")
+        expect(route.endpoint)
+          .to eq(controller: "Web::Controllers::Books", action: "index")
+      end
+
+      it "allows a path prefix to be set" do
+        router.bit :api, path: "api" do
+          get "books", to: "books#index", as: :books
+        end
+
+        route = router.named_map[:api_books]
+
+        expect(route.template)
+          .to eq("/api/books")
+        expect(route.endpoint)
+          .to eq(controller: "Api::Controllers::Books", action: "index")
+      end
+    end
+
     describe "verbs" do
       Router::VERBS.each do |verb|
         describe "##{verb.downcase}" do

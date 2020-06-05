@@ -1,0 +1,6 @@
+# frozen_string_literal: true
+
+module Web
+  class Controllers::Application < Ramverk::Controller
+  end
+end

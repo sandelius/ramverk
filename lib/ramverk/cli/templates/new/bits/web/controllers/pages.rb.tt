@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+module Web
+  class Controllers::Pages < Controllers::Application
+    def welcome
+      render "Welcome to Ramverk!"
+    end
+  end
+end

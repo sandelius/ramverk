@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Ramverk.application.routes do
-  scope namespace: :controllers do
-    get "/", to: "pages#welcome"
+  bit :web do
+    root to: "pages#welcome"
   end
 end
