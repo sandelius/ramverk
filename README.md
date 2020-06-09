@@ -35,11 +35,11 @@ $ gem install ramverk
 ## Usage
 
 ```bash
-ramverk new petstore
+$ ramverk new petstore
 ```
 
 ```bash
-cd petstore && bundle && ramverk server
+$ cd petstore && bundle && ramverk server
 ```
 
 ## Contributing
