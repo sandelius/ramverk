@@ -1,0 +1,7 @@
+# frozen_string_literal: true
+
+Ramverk.application.routes do
+  scope namespace: "Controllers" do
+    # Routes DSL
+  end
+end

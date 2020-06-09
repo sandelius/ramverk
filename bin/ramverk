@@ -1,0 +1,126 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "pathname"
+require "erb"
+require "ostruct"
+require "fileutils"
+require "bundler"
+require "rack"
+require "ramverk/version"
+
+def help
+  puts <<~HELP
+    ramverk new APP_NAME    # Generate a new application
+    ramverk s[erver]        # Start Ramverk development server
+    ramverk version         # Print framework version
+  HELP
+end
+
+def erb(source, destination, **locals)
+  file = File.join(__dir__, "app", source)
+  body = File.read(file)
+  context = OpenStruct.new(locals)
+  result = ERB.new(body).result(context.instance_eval { binding })
+
+  FileUtils.mkdir_p(File.dirname(destination))
+  File.write(destination, result)
+
+  text = destination.sub("#{Dir.pwd}/", "")
+  puts "created: #{text}"
+end
+
+def touch(destination)
+  FileUtils.mkdir_p(File.dirname(destination))
+  FileUtils.touch destination
+
+  text = destination.sub("#{Dir.pwd}/", "")
+  puts "created: #{text}"
+end
+
+def app(args)
+  if args.empty?
+    puts "APP_NAME is required: ramverk new my_app"
+    exit
+  end
+
+  name = args.shift
+
+  locals = {}
+  locals[:app_name] = name.downcase
+  locals[:app_namespace] = camelize(locals[:app_name])
+
+  root = Pathname.new(Dir.pwd).join(locals[:app_name])
+
+  # ./
+  erb "config.ru.tt", root.join("config.ru"), **locals
+  erb "Rakefile.tt", root.join("Rakefile"), **locals
+  erb "Gemfile.tt", root.join("Gemfile"), **locals
+  erb ".gitignore.tt", root.join(".gitignore"), **locals
+  erb ".env.example.tt", root.join(".env.example"), **locals
+  erb ".env.development.tt", root.join(".env.development"), **locals
+  erb ".env.test.tt", root.join(".env.test"), **locals
+
+  # ./config
+  erb "config/application.rb.tt", root.join("config", "application.rb"), **locals
+  erb "config/boot.rb.tt", root.join("config", "boot.rb"), **locals
+  erb "config/database.rb.tt", root.join("config", "database.rb"), **locals
+  erb "config/routes.rb.tt", root.join("config", "routes.rb"), **locals
+
+  # ./lib
+  erb "lib/app.rb.tt", root.join("lib", "#{locals[:app_name]}.rb"), **locals
+  touch root.join("lib", "#{locals[:app_name]}", ".gitkeep")
+  touch root.join("lib", "models", ".gitkeep")
+
+  # ./spec
+  erb "spec/spec_helper.rb.tt", root.join("spec", "spec_helper.rb"), **locals
+  erb "spec/lib/app_spec.rb.tt", root.join("spec", "lib", "#{locals[:app_name]}_spec.rb"), **locals
+  touch root.join("spec", "lib", "models", ".gitkeep")
+  touch root.join("spec", "support", ".gitkeep")
+
+  # ./public
+  touch root.join("public", ".gitkeep")
+
+  # ./web
+  erb "web/controllers/application.rb.tt", root.join("web", "controllers", "application.rb"), **locals
+end
+
+def camelize(name)
+  name.split(/_|-/).map(&:capitalize).join
+end
+
+module Ramverk
+  class Server < Rack::Server
+    def middleware
+      mw = ::Hash.new { |e, m| e[m] = [] }
+      mw["development"].concat([::Rack::ShowExceptions])
+      mw
+    end
+  end
+end
+
+def server(_argv)
+  port = ENV["PORT"]&.to_i || 3000
+
+  Ramverk::Server.new(config: "config.ru",
+                      Host: "0.0.0.0",
+                      Port: port,
+                      AccessLog: []).start
+end
+
+command = ARGV.shift
+
+case command
+when "server", "s"
+  server(ARGV)
+  exit
+when "version"
+  puts Ramverk::VERSION
+  exit
+when "new"
+  app(ARGV)
+  exit
+else
+  help
+  exit
+end

@@ -1,0 +1,13 @@
+# frozen_string_literal: true
+
+require "ramverk/database"
+
+Ramverk.application do
+  extend Ramverk::Database
+
+  # Connection credentials
+  config.database.connection = ENV.fetch("DATABASE_URL")
+
+  # Autoload models as root constants
+  config.autoload_paths << "lib/models"
+end

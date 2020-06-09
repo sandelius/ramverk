@@ -1,0 +1,30 @@
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "ramverk/setup"
+
+module <%= app_namespace %>
+  class Application < Ramverk::Application
+    require_relative "routes"
+    require_relative "database"
+
+    # Paths of which Ramverk will autoload constants.
+    config.autoload_paths << "lib"
+    config.autoload_paths << "web"
+
+    # DEVELOPMENT
+
+    config.environment :development do
+    end
+
+    # TEST
+
+    config.environment :test do
+    end
+
+    # PRODUCTION
+
+    config.environment :production do
+    end
+  end
+end

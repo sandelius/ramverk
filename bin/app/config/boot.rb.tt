@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+# This file is only used when booting up your application outside of a web
+# request. Background workers is one common use case where this file should
+# be loaded.
+
+require_relative "application"
+
+Ramverk.application.boot

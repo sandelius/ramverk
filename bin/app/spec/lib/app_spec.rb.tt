@@ -1,0 +1,10 @@
+# frozen_string_literal: true
+
+require "spec_helper"
+
+RSpec.describe <%= app_namespace %> do
+  it "works" do
+    expect(true)
+      .to eq(true)
+  end
+end
