@@ -29,7 +29,4 @@ begin
 rescue LoadError
 end
 
-# Load Ramverk rake tasks
-require_relative "../rake/ramverk" if Ramverk.rake?
-
 # rubocop:enable Lint/SuppressedException
